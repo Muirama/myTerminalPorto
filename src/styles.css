@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+html, body, #root {
+    height: 100%;
+    width: 100%;
+    background-color: #0d0d0d;
+    color: #c4c4c4;
+    font-family: 'Fira Mono', monospace;
+    overflow: auto;
+    margin: 0;
+  }
+  
+  input, textarea {
+    font-family: 'Fira Mono', monospace;
+  }
+  
+  .blinking-cursor::after {
+    content: "|";
+    animation: blink 1s steps(2, start) infinite;
+    color: #00f0ff;
+    font-weight: bold;
+  }
+  
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    50.01%, 100% { opacity: 0; }
+  }
