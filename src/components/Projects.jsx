@@ -1,12 +1,20 @@
-import { FiGithub } from "react-icons/fi";
+import { FiGithub, FiExternalLink } from "react-icons/fi";
 
 const projects = [
   {
     title: "MyPortoTerminal 💻",
-    description:
-      "Un portfolio web sous forme de terminal.",
-    tech: ["React", "Tailwind CSS"],
+    description: "Un portfolio web sous forme de terminal.",
+    tech: ["React", "Tailwind CSS", "Vite"],
     repo: "https://github.com/Muirama/myTerminalPorto",
+    lien: "https://muirama-terminal-porto.netlify.app",
+  },
+  {
+    title: "Gascom Mada 🎮",
+    description:
+      "Un exemple de page web pour E_sport et gaming ( en cours d'amélioration).",
+    tech: ["React", "Tailwind CSS", "Vite"],
+    repo: "https://github.com/Muirama/Gascom",
+    lien: "https://gascomtest.netlify.app/",
   },
   {
     title: "Alarme et Réveil ⏰",
@@ -38,28 +46,24 @@ const projects = [
   },
   {
     title: "Pokédex 📱",
-    description:
-      "Application mobile pokédex pour pokémon !",
+    description: "Application mobile pokédex pour pokémon !",
     tech: ["React Native", "Expo", "API pokémon"],
     repo: "https://github.com/Muirama/Pokedex",
   },
   {
     title: "BroCode 🤝",
-    description:
-      "Application mobile qui regroupe les règles entre potes !",
+    description: "Application mobile qui regroupe les règles entre potes !",
     tech: ["Flutter", "Dart"],
   },
   {
     title: "FacebookCLone",
-    description:
-      "Site web comme facebook ",
+    description: "Site web comme facebook ",
     tech: ["PHP , Laravel"],
     repo: "https://github.com/Muirama/fb_clone",
   },
   {
     title: "Ecommerce 📱",
-    description:
-      "Application mobile pour les e_commerce ",
+    description: "Application mobile pour les e_commerce ",
     tech: ["React Native", "Expo", "MySQL"],
     repo: "https://github.com/Muirama/Ecommerce",
   },
@@ -69,7 +73,7 @@ export default function Projects() {
   return (
     <div>
       <ul className="space-y-6 font-mono text-green-300">
-        {projects.map(({ title, description, tech, repo, demo }, idx) => (
+        {projects.map(({ title, description, tech, repo, lien }, idx) => (
           <li
             key={idx}
             className="bg-green-900 p-4 rounded-md border border-green-600"
@@ -91,14 +95,15 @@ export default function Projects() {
                   Code source
                 </a>
               )}
-              {demo && (
+              {lien && (
                 <a
-                  href={demo}
+                  href={lien}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-green-500 underline"
+                  className="text-green-500 underline mr-4 flex items-center gap-1"
                 >
-                  Voir la démo
+                  <FiExternalLink />
+                  Voir
                 </a>
               )}
             </p>
