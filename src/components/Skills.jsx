@@ -1,4 +1,14 @@
+import { useEffect, useState } from 'react'
+
 export default function Skills() {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    // trigger animation after mount
+    const t = setTimeout(() => setMounted(true), 50)
+    return () => clearTimeout(t)
+  }, [])
+
   const skillCategories = {
     "Front-end": [
       { name: "React.js", level: 95 },
@@ -33,11 +43,7 @@ export default function Skills() {
     "Développement de jeux": [{ name: "Godot Engine", level: 50 }],
   };
 
-  const getProgressBar = (level) => {
-    const totalBars = 50;
-    const filledBars = Math.round((level / 100) * totalBars);
-    return "█".repeat(filledBars) + "-".repeat(totalBars - filledBars);
-  };
+  // visual bars will be rendered below
 
   return (
     <div>
@@ -49,19 +55,37 @@ export default function Skills() {
       {Object.entries(skillCategories).map(([category, skills], idx) => (
         <div key={idx} className="mb-6">
           <h3 className="text-green-300 font-bold mb-2">{category}</h3>
-          <ul className="space-y-2 font-mono">
-            {skills.map((skill, i) => (
-              <li
-                key={i}
-                className="flex items-center justify-between text-green-200"
-              >
-                <span className="w-40">{skill.name}</span>
-                <span className="flex-1 ml-4 text-green-400">
-                  {getProgressBar(skill.level)}
-                </span>
-                <span className="ml-2 text-green-500">{skill.level}%</span>
-              </li>
-            ))}
+          <ul className="space-y-3">
+            {skills.map((skill, i) => {
+              const delay = `${(i + idx * 3) * 70}ms`
+              return (
+                <li
+                  key={i}
+                  className="skill-row flex items-center justify-between text-green-200"
+                >
+                  <div className="skill-name text-sm w-40 truncate">{skill.name}</div>
+
+                  <div
+                    className="skill-bar flex-1 mx-4"
+                    role="progressbar"
+                    aria-valuenow={skill.level}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label={`${skill.name} niveau ${skill.level} pour cent`}
+                  >
+                    <div
+                      className="skill-fill"
+                      style={{
+                        width: mounted ? `${skill.level}%` : '0% ',
+                        transitionDelay: mounted ? delay : '0ms',
+                      }}
+                    />
+                  </div>
+
+                  <div className="skill-percent ml-2 text-xs text-green-500 w-10 text-right">{skill.level}%</div>
+                </li>
+              )
+            })}
           </ul>
         </div>
       ))}

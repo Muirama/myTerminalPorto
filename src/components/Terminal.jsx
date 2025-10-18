@@ -27,36 +27,29 @@ export default function Terminal() {
       ]);
       return;
     }
-    if (
-      typeof CommandComponent === "function" &&
-      !CommandComponent.prototype?.render
-    ) {
-      // Fonction qui retourne JSX
-      setHistory((h) => [
-        ...h,
-        {
-          input,
-          output: <CommandOutput>{CommandComponent(args)}</CommandOutput>,
-        },
-      ]);
-    } else {
-      // Composant React
-      setHistory((h) => [
-        ...h,
-        {
-          input,
-          output: (
-            <CommandOutput>
-              <CommandComponent />
-            </CommandOutput>
-          ),
-        },
-      ]);
-    }
+    // Render the command as a React component. Pass args as a prop so
+    // components that need parameters can access them via props.args.
+    setHistory((h) => [
+      ...h,
+      {
+        input,
+        output: (
+          <CommandOutput>
+            <CommandComponent args={args} />
+          </CommandOutput>
+        ),
+      },
+    ]);
   }
 
   return (
-    <section className="w-full h-screen max-w-4xl mx-auto flex flex-col bg-background rounded-md shadow-lg">
+    <section
+      className="w-full h-screen max-w-4xl mx-auto flex flex-col bg-background rounded-md shadow-lg"
+      role="region"
+      aria-label="Terminal - portfolio"
+      tabIndex={0}
+      onClick={() => document.getElementById('command-input')?.focus()}
+    >
       {/* --- Header --- */}
       <div className="bg-gray-800 px-4 py-2 rounded-t-md flex items-center justify-between">
         <div className="flex space-x-2">
@@ -68,7 +61,12 @@ export default function Terminal() {
       </div>
 
       {/* --- Zone scrollable --- */}
-      <div className="flex-1 overflow-y-auto bg-black p-4 text-green-400 font-mono text-sm">
+      <div
+        className="flex-1 overflow-y-auto bg-black p-4 text-green-400 font-mono text-sm"
+        role="log"
+        aria-live="polite"
+        aria-atomic="false"
+      >
         {history.map(({ input, output }, index) => (
           <div key={index}>
             <pre className="text-accent">{`> ${input}`}</pre>

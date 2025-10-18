@@ -19,7 +19,7 @@ const projects = [
   {
     title: "Alarme et Réveil ⏰",
     description:
-      "Application mobile de réveil et alarme que j'ai crée pour notre église, durée de son limité (1 min) et sans répétition.",
+      "Application mobile de réveil et alarme que j'ai crée pour notre église,durée de son limité et sans répétition.",
     tech: ["Flutter", "Dart"],
     repo: "https://github.com/Muirama/alarmFiangonana",
   },

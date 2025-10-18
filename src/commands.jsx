@@ -4,6 +4,7 @@ import Projects from './components/Projects.jsx'
 import Contact from './components/Contact.jsx'
 import Help from './components/Help.jsx'
 import CV from './components/CV.jsx'
+import Exit from './components/Exit.jsx'
 
 const commands = {
   help: Help,
@@ -11,9 +12,9 @@ const commands = {
   skills: Skills,
   projects: Projects,
   contact: Contact,
-  cv : CV,
-  clear: null, 
-  exit: () => <p>Merci de votre visite. À bientôt !</p>,
+  cv: CV,
+  clear: null,
+  exit: Exit,
 }
 
 export default commands

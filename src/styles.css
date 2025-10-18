@@ -5,7 +5,7 @@ html, body, #root {
     width: 100%;
     background-color: #0d0d0d;
     color: #c4c4c4;
-    font-family: 'Fira Mono', monospace;
+  font-family: 'Fira Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
     overflow: auto;
     margin: 0;
   }
@@ -25,3 +25,77 @@ html, body, #root {
     0%, 50% { opacity: 1; }
     50.01%, 100% { opacity: 0; }
   }
+
+/* Respect user motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .blinking-cursor::after {
+    animation: none;
+  }
+}
+
+/* Focus styles for keyboard users */
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 3px solid rgba(0,240,255,0.18);
+  outline-offset: 2px;
+}
+
+input:focus-visible, button:focus-visible, a:focus-visible {
+  box-shadow: 0 0 0 3px rgba(0,240,255,0.10);
+}
+
+/* Skills progress bar styles */
+.skill-row {
+  align-items: center;
+}
+
+.skill-name {
+  color: #9ae6b4; /* lighter green */
+}
+
+.skill-bar {
+  background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.04);
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.skill-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00f0ff, #7cfc00);
+  width: 0%;
+  border-radius: 999px;
+  transition: width 900ms cubic-bezier(.2,.9,.2,1);
+}
+
+/* Subtle shimmer overlay for perceived motion */
+.skill-fill::after {
+  content: '';
+  display: block;
+  height: 100%;
+  width: 30%;
+  background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0));
+  transform: translateX(-120%);
+  animation: shimmer 1.6s linear infinite;
+}
+
+@keyframes shimmer {
+  to { transform: translateX(220%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skill-fill, .skill-fill::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* responsive tweaks */
+@media (max-width: 640px) {
+  .skill-name { width: 28%; min-width: 90px }
+  .skill-percent { width: 12%; }
+}
