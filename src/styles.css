@@ -1,101 +1,614 @@
 @import "tailwindcss";
 
-html, body, #root {
-    height: 100%;
-    width: 100%;
-    background-color: #0d0d0d;
-    color: #c4c4c4;
-  font-family: 'Fira Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
-    overflow: auto;
-    margin: 0;
-  }
-  
-  input, textarea {
-    font-family: 'Fira Mono', monospace;
-  }
-  
-  .blinking-cursor::after {
-    content: "|";
-    animation: blink 1s steps(2, start) infinite;
-    color: #00f0ff;
-    font-weight: bold;
-  }
-  
-  @keyframes blink {
-    0%, 50% { opacity: 1; }
-    50.01%, 100% { opacity: 0; }
-  }
-
-/* Respect user motion preferences */
-@media (prefers-reduced-motion: reduce) {
-  .blinking-cursor::after {
-    animation: none;
-  }
+/* ═══════════════════════════════════════════
+   Variables
+═══════════════════════════════════════════ */
+:root {
+  --green: #00e676;
+  --cyan: #00e5ff;
+  --dim: #444;
+  --bg: #0a0a0a;
+  --surface: #111;
+  --border: #1e1e1e;
+  --text: #ccc;
+  --error: #ff5252;
 }
 
-/* Focus styles for keyboard users */
-:focus {
-  outline: none;
+/* ═══════════════════════════════════════════
+   Reset
+═══════════════════════════════════════════ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-:focus-visible {
-  outline: 3px solid rgba(0,240,255,0.18);
-  outline-offset: 2px;
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family:
+    "Fira Mono", "Cascadia Code", ui-monospace, "Courier New", monospace;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
 
-input:focus-visible, button:focus-visible, a:focus-visible {
-  box-shadow: 0 0 0 3px rgba(0,240,255,0.10);
+input,
+textarea {
+  font-family: inherit;
+}
+a {
+  color: var(--cyan);
+}
+a:hover {
+  text-decoration: underline;
 }
 
-/* Skills progress bar styles */
-.skill-row {
+/* ═══════════════════════════════════════════
+   Layout terminal
+═══════════════════════════════════════════ */
+.terminal-root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  max-width: 900px;
+  margin: 0 auto;
+  background: var(--bg);
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+
+.terminal-titlebar {
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: #161616;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
 }
 
+.terminal-dots {
+  display: flex;
+  gap: 8px;
+}
+.terminal-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.dot-red {
+  background: #ff5f57;
+}
+.dot-yellow {
+  background: #febc2e;
+}
+.dot-green {
+  background: #28c840;
+}
+.terminal-title {
+  font-size: 12px;
+  color: #555;
+  letter-spacing: 0.04em;
+}
+.terminal-status {
+  font-size: 11px;
+  color: var(--dim);
+}
+
+.terminal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  scroll-behavior: smooth;
+}
+
+.terminal-body::-webkit-scrollbar {
+  width: 4px;
+}
+.terminal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+.terminal-body::-webkit-scrollbar-thumb {
+  background: #222;
+  border-radius: 2px;
+}
+
+.terminal-input-area {
+  flex-shrink: 0;
+  padding: 12px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+}
+
+/* ═══════════════════════════════════════════
+   Prompt
+═══════════════════════════════════════════ */
+.prompt-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--green);
+  position: relative;
+}
+
+.prompt-arrow {
+  color: var(--cyan);
+  user-select: none;
+  flex-shrink: 0;
+}
+.prompt-input-wrap {
+  flex: 1;
+  position: relative;
+}
+
+.prompt-ghost {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  white-space: pre;
+  color: var(--dim);
+  font-size: 13px;
+}
+
+.prompt-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--green);
+  font-size: 13px;
+  caret-color: var(--cyan);
+  font-family: inherit;
+}
+
+.prompt-input::placeholder {
+  color: #2a2a2a;
+}
+
+/* ═══════════════════════════════════════════
+   Curseur
+═══════════════════════════════════════════ */
+.blinking-cursor::after {
+  content: "█";
+  color: var(--cyan);
+  animation: blink 1s steps(1) infinite;
+  font-size: 13px;
+}
+
+@keyframes blink {
+  0%,
+  49% {
+    opacity: 0.8;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   Historique
+═══════════════════════════════════════════ */
+.cmd-entry {
+  margin-bottom: 16px;
+}
+.cmd-echo {
+  font-size: 13px;
+  color: var(--cyan);
+  margin-bottom: 6px;
+  user-select: none;
+}
+.cmd-output {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.7;
+  animation: fadeIn 150ms ease forwards;
+}
+.cmd-output.is-error {
+  color: var(--error);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   Welcome
+═══════════════════════════════════════════ */
+.welcome {
+  margin-bottom: 24px;
+}
+.welcome-ascii {
+  color: #1e4d2a;
+  font-size: 11px;
+  line-height: 1.3;
+  margin-bottom: 12px;
+  user-select: none;
+}
+.welcome-name {
+  color: var(--green);
+  font-size: 14px;
+  font-weight: bold;
+}
+.welcome-sub {
+  color: #555;
+  font-size: 12px;
+  margin-top: 2px;
+}
+.welcome-hints {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: #444;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.hint-key {
+  color: var(--cyan);
+}
+
+/* ═══════════════════════════════════════════
+   Session terminée
+═══════════════════════════════════════════ */
+.session-ended-bar {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--dim);
+}
+.input-disabled {
+  opacity: 0.3;
+  pointer-events: none;
+  user-select: none;
+  font-size: 12px;
+  color: var(--dim);
+}
+
+/* ═══════════════════════════════════════════
+   Help
+═══════════════════════════════════════════ */
+.help-grid {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 5px 12px;
+  font-size: 13px;
+}
+.help-cmd {
+  color: var(--cyan);
+}
+.help-desc {
+  color: #888;
+}
+.help-tip {
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--dim);
+}
+
+/* ═══════════════════════════════════════════
+   About
+═══════════════════════════════════════════ */
+.about-wrap {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+.about-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #1e3d1e;
+  flex-shrink: 0;
+}
+.about-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+}
+.about-name {
+  color: var(--green);
+  font-size: 15px;
+  font-weight: bold;
+  line-height: 1.3;
+}
+.about-role {
+  color: var(--cyan);
+}
+.about-text {
+  color: #999;
+  line-height: 1.7;
+}
+.about-strong {
+  color: #bbb;
+}
+.about-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 11px;
+  color: var(--dim);
+  margin-top: 4px;
+}
+
+/* ═══════════════════════════════════════════
+   Skills
+═══════════════════════════════════════════ */
+.skills-intro {
+  font-size: 12px;
+  color: var(--dim);
+  margin-bottom: 16px;
+  font-style: italic;
+}
+.skills-cat {
+  margin-bottom: 18px;
+}
+.skills-cat-title {
+  color: #555;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+.skill-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
 .skill-name {
-  color: #9ae6b4; /* lighter green */
+  font-size: 12px;
+  color: #9ae6b4;
+  width: 130px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-
 .skill-bar {
-  background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border: 1px solid rgba(255,255,255,0.04);
-  height: 10px;
-  border-radius: 999px;
+  flex: 1;
+  height: 6px;
+  background: #181818;
+  border-radius: 3px;
   overflow: hidden;
 }
-
 .skill-fill {
   height: 100%;
-  background: linear-gradient(90deg, #00f0ff, #7cfc00);
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--cyan), var(--green));
   width: 0%;
-  border-radius: 999px;
-  transition: width 900ms cubic-bezier(.2,.9,.2,1);
+  transition: width 900ms cubic-bezier(0.2, 0.9, 0.2, 1);
 }
-
-/* Subtle shimmer overlay for perceived motion */
 .skill-fill::after {
-  content: '';
+  content: "";
   display: block;
   height: 100%;
-  width: 30%;
-  background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0));
+  width: 35%;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1), transparent);
   transform: translateX(-120%);
-  animation: shimmer 1.6s linear infinite;
+  animation: shimmer 2s linear infinite;
 }
-
 @keyframes shimmer {
-  to { transform: translateX(220%); }
+  to {
+    transform: translateX(300%);
+  }
+}
+.skill-pct {
+  font-size: 11px;
+  color: var(--dim);
+  width: 32px;
+  text-align: right;
+  flex-shrink: 0;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .skill-fill, .skill-fill::after {
-    transition: none !important;
-    animation: none !important;
+/* ═══════════════════════════════════════════
+   Projects
+═══════════════════════════════════════════ */
+.projects-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.project-card {
+  border: 1px solid var(--border);
+  border-left: 3px solid #1a3a1a;
+  border-radius: 4px;
+  padding: 12px 14px;
+  font-size: 13px;
+  transition: border-left-color 200ms;
+}
+.project-card:hover {
+  border-left-color: var(--green);
+}
+.project-title {
+  color: var(--green);
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+.project-desc {
+  color: #888;
+  font-size: 12px;
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+.project-tech {
+  color: #555;
+  font-size: 11px;
+  margin-bottom: 8px;
+}
+.project-tech span {
+  color: #666;
+}
+.project-links {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.project-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--cyan);
+  text-decoration: none;
+}
+.project-link:hover {
+  text-decoration: underline;
+}
+
+/* ═══════════════════════════════════════════
+   Contact
+═══════════════════════════════════════════ */
+.contact-intro {
+  color: #888;
+  font-size: 13px;
+  margin-bottom: 14px;
+  line-height: 1.6;
+}
+.contact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+.contact-icon {
+  color: var(--green);
+  flex-shrink: 0;
+}
+.contact-label {
+  color: var(--cyan);
+}
+.contact-text {
+  color: var(--text);
+}
+
+/* ═══════════════════════════════════════════
+   CV
+═══════════════════════════════════════════ */
+.cv-wrap {
+  font-size: 13px;
+}
+.cv-title {
+  color: #999;
+  margin-bottom: 10px;
+}
+.cv-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--cyan);
+  border: 1px solid #1a3a3a;
+  padding: 6px 14px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: border-color 200ms;
+}
+.cv-link:hover {
+  border-color: var(--cyan);
+}
+.cv-date {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--dim);
+}
+.cv-error {
+  color: var(--error);
+  margin-bottom: 6px;
+}
+.cv-checking {
+  color: var(--dim);
+  font-size: 12px;
+}
+
+/* ═══════════════════════════════════════════
+   Lang
+═══════════════════════════════════════════ */
+.lang-wrap {
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.lang-current {
+  color: #888;
+}
+.lang-key {
+  color: var(--cyan);
+  font-weight: bold;
+}
+.lang-usage {
+  color: var(--dim);
+  font-size: 12px;
+}
+.lang-ok {
+  color: var(--green);
+}
+.lang-err {
+  color: var(--error);
+}
+
+/* ═══════════════════════════════════════════
+   Responsive
+═══════════════════════════════════════════ */
+@media (max-width: 600px) {
+  .terminal-body {
+    padding: 14px;
+  }
+  .terminal-input-area {
+    padding: 10px 14px;
+  }
+  .about-wrap {
+    flex-direction: column;
+  }
+  .about-avatar {
+    width: 56px;
+    height: 56px;
+  }
+  .skill-name {
+    width: 90px;
+    font-size: 11px;
+  }
+  .welcome-ascii {
+    display: none;
+  }
+  .help-grid {
+    grid-template-columns: 80px 1fr;
   }
 }
 
-/* responsive tweaks */
-@media (max-width: 640px) {
-  .skill-name { width: 28%; min-width: 90px }
-  .skill-percent { width: 12%; }
+/* ═══════════════════════════════════════════
+   Reduced motion
+═══════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .blinking-cursor::after,
+  .skill-fill::after,
+  .cmd-output {
+    animation: none !important;
+  }
+  .skill-fill {
+    transition: none !important;
+  }
 }

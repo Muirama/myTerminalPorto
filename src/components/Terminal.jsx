@@ -1,17 +1,74 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import CommandInput from "./CommandInput.jsx";
-import CommandOutput from "./CommandOutput.jsx";
 import commands from "../commands.jsx";
+import Welcome from "./Welcome.jsx";
+import {useLang} from "../hooks/useLang.js";
+import t from "../i18n.js";
 
 export default function Terminal() {
   const [history, setHistory] = useState([]);
+  const [exited, setExited] = useState(false);
+  const bottomRef = useRef(null);
+  const { lang, setLang } = useLang();
+  const tr = t[lang];
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [history]);
 
   function handleCommand(input) {
-    const [cmd, ...args] = input.toLowerCase().split(" ");
+    const parts = input.trim().split(/\s+/);
+    const cmd = parts[0].toLowerCase();
+    const args = parts.slice(1);
+
     if (cmd === "clear") {
       setHistory([]);
       return;
     }
+
+    if (cmd === "exit") {
+      setHistory((h) => [
+        ...h,
+        {
+          input,
+          output: <p style={{ color: "var(--dim)" }}>{tr.terminal_end_msg}</p>,
+          isError: false,
+        },
+      ]);
+      setExited(true);
+      return;
+    }
+
+    if (cmd === "lang") {
+      const requested = args[0]?.toLowerCase();
+      if (requested === "fr" || requested === "en") {
+        setLang(requested);
+        setHistory((h) => [
+          ...h,
+          {
+            input,
+            output: (
+              <p className="lang-ok">
+                {requested === "fr"
+                  ? "🇫🇷 Interface en français activée."
+                  : "🇬🇧 English interface activated."}
+              </p>
+            ),
+          },
+        ]);
+      } else {
+        const LangComponent = commands["lang"];
+        setHistory((h) => [
+          ...h,
+          {
+            input,
+            output: <LangComponent args={args} />,
+          },
+        ]);
+      }
+      return;
+    }
+
     const CommandComponent = commands[cmd];
     if (!CommandComponent) {
       setHistory((h) => [
@@ -19,66 +76,81 @@ export default function Terminal() {
         {
           input,
           output: (
-            <CommandOutput isError>
-              Erreur : commande "{cmd}" inconnue. Tapez 'help'.
-            </CommandOutput>
+            <span>
+              Commande inconnue : "
+              <span style={{ color: "var(--cyan)" }}>{cmd}</span>". Tapez{" "}
+              <span style={{ color: "var(--cyan)" }}>help</span>.
+            </span>
           ),
+          isError: true,
         },
       ]);
       return;
     }
-    // Render the command as a React component. Pass args as a prop so
-    // components that need parameters can access them via props.args.
+
     setHistory((h) => [
       ...h,
       {
         input,
-        output: (
-          <CommandOutput>
-            <CommandComponent args={args} />
-          </CommandOutput>
-        ),
+        output: <CommandComponent args={args} />,
+        isError: false,
       },
     ]);
   }
 
   return (
-    <section
-      className="w-full h-screen max-w-4xl mx-auto flex flex-col bg-background rounded-md shadow-lg"
-      role="region"
-      aria-label="Terminal - portfolio"
-      tabIndex={0}
-      onClick={() => document.getElementById('command-input')?.focus()}
+    <div
+      className="terminal-root"
+      onClick={() =>
+        !exited && document.getElementById("command-input")?.focus()
+      }
     >
-      {/* --- Header --- */}
-      <div className="bg-gray-800 px-4 py-2 rounded-t-md flex items-center justify-between">
-        <div className="flex space-x-2">
-          <span className="w-3 h-3 bg-red-500 rounded-full" />
-          <span className="w-3 h-3 bg-yellow-500 rounded-full" />
-          <span className="w-3 h-3 bg-green-500 rounded-full" />
+      {/* Barre de titre */}
+      <div className="terminal-titlebar">
+        <div className="terminal-dots">
+          <span className="terminal-dot dot-red" />
+          <span className="terminal-dot dot-yellow" />
+          <span className="terminal-dot dot-green" />
         </div>
-        <span className="text-gray-300 text-xs">Terminal — Portfolio</span>
+        <span className="terminal-title">mandresy@portfolio ~ $</span>
+        <span className="terminal-status">
+          {exited ? tr.terminal_ended : tr.terminal_active}
+        </span>
       </div>
 
-      {/* --- Zone scrollable --- */}
+      {/* Corps scrollable */}
       <div
-        className="flex-1 overflow-y-auto bg-black p-4 text-green-400 font-mono text-sm"
+        className="terminal-body"
         role="log"
         aria-live="polite"
         aria-atomic="false"
       >
-        {history.map(({ input, output }, index) => (
-          <div key={index}>
-            <pre className="text-accent">{`> ${input}`}</pre>
-            {output}
+        <Welcome />
+
+        {history.map(({ input, output, isError }, i) => (
+          <div key={i} className="cmd-entry">
+            <div className="cmd-echo">&gt; {input}</div>
+            <div className={`cmd-output${isError ? " is-error" : ""}`}>
+              {output}
+            </div>
           </div>
         ))}
+
+        {exited && (
+          <div className="session-ended-bar">{tr.terminal_end_sep}</div>
+        )}
+
+        <div ref={bottomRef} />
       </div>
 
-      {/* --- Input toujours visible --- */}
-      <div className="bg-black p-4 border-t border-gray-700">
-        <CommandInput onSubmit={handleCommand} />
+      {/* Input */}
+      <div className="terminal-input-area">
+        {exited ? (
+          <p className="input-disabled">{tr.terminal_refresh}</p>
+        ) : (
+          <CommandInput onSubmit={handleCommand} />
+        )}
       </div>
-    </section>
+    </div>
   );
 }

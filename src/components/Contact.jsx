@@ -1,47 +1,48 @@
 import { FiMail, FiLinkedin, FiGithub, FiPhone } from "react-icons/fi";
+import {useLang} from "../hooks/useLang.js";
+import t from "../i18n.js";
 
 export default function Contact() {
+  const { lang } = useLang();
+  const tr = t[lang];
+
   return (
-    <div className="font-mono text-green-300 space-y-4">
-      <p>
-        Je suis toujours ravi d’échanger sur des projets ou opportunités. 
-        N’hésite pas à me contacter pour un travail, une étude, un freelance, 
-        un projet ou toute autre collaboration !
-      </p>
-      <ul className="space-y-2">
-        <li className="flex items-center gap-2">
-          <FiMail className="text-green-400" />
-          <span className="text-green-400 hover:underline">
+    <div>
+      <p className="contact-intro">{tr.contact_intro}</p>
+      <div className="contact-list">
+        <div className="contact-item">
+          <FiMail className="contact-icon" size={14} />
+          <span className="contact-text">
             mandresy.michel.ramandimbinirina@esti.mg
           </span>
-        </li>
-        <li className="flex items-center gap-2">
-          <FiLinkedin className="text-green-400" />
+        </div>
+        <div className="contact-item">
+          <FiLinkedin className="contact-icon" size={14} />
           <a
             href="https://linkedin.com/in/mandresy-michel-ramandimbinirina-1424b4298"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-green-400 hover:underline"
+            className="contact-label"
           >
             linkedin.com/in/mandresy
           </a>
-        </li>
-        <li className="flex items-center gap-2">
-          <FiGithub className="text-green-400" />
+        </div>
+        <div className="contact-item">
+          <FiGithub className="contact-icon" size={14} />
           <a
             href="https://github.com/Muirama"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-green-400 hover:underline"
+            className="contact-label"
           >
             github.com/Muirama
           </a>
-        </li>
-        <li className="flex items-center gap-2">
-          <FiPhone className="text-green-400" />
-          <span>+261 34 23 405 14</span>
-        </li>
-      </ul>
+        </div>
+        <div className="contact-item">
+          <FiPhone className="contact-icon" size={14} />
+          <span className="contact-text">+261 34 23 405 14</span>
+        </div>
+      </div>
     </div>
   );
 }

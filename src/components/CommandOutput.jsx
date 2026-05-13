@@ -1,11 +1,12 @@
 export default function CommandOutput({ children, isError }) {
-    return (
-      <pre
-        className={`whitespace-pre-wrap mb-2 ${isError ? 'text-error' : 'text-text'}`}
-        role={isError ? 'alert' : 'article'}
-      >
-        {children}
-      </pre>
-    )
-  }
-  
+  return (
+    <div
+      className={`whitespace-pre-wrap mb-3 cmd-output-enter ${
+        isError ? "text-red-400" : "text-gray-300"
+      }`}
+      role={isError ? "alert" : "article"}
+    >
+      {children}
+    </div>
+  );
+}

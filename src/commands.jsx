@@ -5,16 +5,18 @@ import Contact from './components/Contact.jsx'
 import Help from './components/Help.jsx'
 import CV from './components/CV.jsx'
 import Exit from './components/Exit.jsx'
+import Lang from './components/Lang.jsx'
 
 const commands = {
-  help: Help,
-  about: About,
-  skills: Skills,
+  help:     Help,
+  about:    About,
+  skills:   Skills,
   projects: Projects,
-  contact: Contact,
-  cv: CV,
-  clear: null,
-  exit: Exit,
+  contact:  Contact,
+  cv:       CV,
+  lang:     Lang,
+  clear:    null,
+  exit:     Exit,
 }
 
 export default commands
