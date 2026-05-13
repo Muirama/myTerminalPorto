@@ -43,8 +43,6 @@ export default function Skills() {
     "Développement de jeux": [{ name: "Godot Engine", level: 50 }],
   };
 
-  // visual bars will be rendered below
-
   return (
     <div>
       <p className="mb-4 text-sm italic text-green-400">
