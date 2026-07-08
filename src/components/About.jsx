@@ -8,7 +8,7 @@ export default function About() {
   return (
     <div className="about-wrap">
       <img
-        src="/images/profile.jpg"
+        src="/images/profile.png"
         alt="Photo de profil"
         className="about-avatar"
         onError={(e) => {
